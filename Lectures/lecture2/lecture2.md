@@ -59,3 +59,39 @@ If `N` is the number of rows and `M` is the number of columns:
 * If we have as many threads as columns: Complexity is O(N) + O(M-1) (each thread is O(N) for N people in each column, and then we have to combine the results which is O(M-1), the first thread already knows its own result and just needs to combine the other M-1 results)
 
 **Note:** The result also changes depending on the number of cores available as some loops would need to wait for threads to become available if there aren't enough threads to run everything in parallel.
+
+## Program Compiling and Architecture
+Compiling the high level language code results in assembly instructions that are run by the CPU. Normal instructions steps include:
+1. Fetch instruction from memory.
+2. Decode instruction.
+3. Execute instruction.
+
+With multiple cores, this gets a little more complicated as data busses and memory are shared. Memory in the CPU is tiered:
+1. L1 Cache - Smallest and fastest, usually private to each core.
+2. L2 Cache - Larger and slower, usually private to each core. L2 Cache acts as buffer between L1 Cache and L3 Cache.
+3. L3 Cache - Even larger and slower, usually shared between all cores.
+4. RAM - Much larger and slower, shared between all cores. RAM is not physically located on the CPU chip.
+
+The cache levels use SRAM and RAM is generally DRAM. As a result, cache is faster but more expensive per bit, while RAM is slower but cheaper per bit (and higher density).
+
+### Spatial Locality
+When we request data from memory to cache, we retrieve blocks of data at a time. This is because we can assume that a program accessing a specific memory location will need to access nearby memory locations soon. This can effectively cut down on the number of load operations we need to do if we are accessing data that is close together in memory.
+
+
+### Superscalar Processor
+Instruction Level Parallelism (ILP): Processor automatically finds independent instructions in a sequence and can execute them in parallel on multiple execution units.
+
+Example: The code below does not have ILP because each instruction depends on the previous instruction.
+```
+ld r0, addr[r1]
+mul r1, r0, r0
+mul r1, r1, r0
+```
+Another Example: The code below has ILP because the first two instructions are independent of each other and can be executed in parallel.
+```
+add r0, r0, r1 // ILP here
+add r2, r2, r3 // ILP here
+mul r0, r2, r0 // No ILP here
+```
+
+Question: How many Fetch/Decode units do modern day (2025) CPUs have?
