@@ -119,3 +119,40 @@ This is different from superscalar processing
 
 - Superscalar: One core can issue multiple independent instructions in the same cycle (to different functional units)
 
+
+## Conditional Execution
+
+Some Example Code: assume logic is to be executed for each element in array `A`, producing output into the array `result`.
+```c
+<unconditional code>
+
+float x = A[i];
+
+if (x > 0) {
+    float tmp = exp(x,5.f);
+    tmp *= kMyConst1;
+    x = tmp + kMyConst2;
+} else {
+    float tmp - kMyConst1;
+    x = 2.f * tmp;
+}
+
+<resume unconditional code>
+
+result[i] = x;
+```
+
+Diversion: for each array element processed, some elements will take the `if` branch, others the `else` branch.
+- This is problematic for SIMD processing, since the SIMD control unit can only issue one instruction at a time to all ALUs. Therefore, we can't execute two different instruction streams on the same SIMD group. Therefore, we have to run the program serially.
+    1. Run the `if` path on all ALUs and mask off (disable) the ALUs that don't need to execute this path.
+    2. Run the `else` path on all ALUs and mask off (disable) the ALUs that don't need to execute this path.
+- This is called "masking", and utilizing "masking" makes serialized SIMD instructions possible.
+
+**Question:** Which is faster for the above code : a sequential execution, or 1 core with 8-wide SIMD?
+**Answer:** 1 core with 8-wide SIMD is faster
+    - For Sequential:
+        - `3 instructions * N elements + 2 instructions *(M-N) elements = 5N - 2M total instructions`
+        - `N` is the number of positive elements and `M` is the total number of elements, hence `(M-N)` is the number of negative elements.
+    - For 1 core with 8-wide SIMD:
+        - `3 instructions * (N/8) + 2 instructions * ((M-N)/8) = (5N - 2M)/8 total instructions`
+        - This is 8 times faster than sequential execution.
