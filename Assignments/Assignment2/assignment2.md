@@ -75,15 +75,15 @@ While the problem specifies the number of columns and rows, I prefer to think of
 
 There are two main considerations when it comes to time complexity. Let's define them as follows:
 - **Computation Cost (T_{Comp})**: The time taken for a single computation. These will be defined as:
-	- **T_{22}**: Time taken to add two 2-digit numbers. `T_{22} = 2 clock cycles`.
-	- **T_{32}**: Time taken to add a 3-digit number and a 2-digit number. `T_{32} = 3 clock cycles`.
-	- **T_{42}**: Time taken to add a 4-digit number and a 2-digit number. `T_{42} = 4 clock cycles`.
-	- **T_{Div}**: Time taken to divide a number. `T_{Div} = 10 clock cycles`.
+	- **$T_{22}$**: Time taken to add two 2-digit numbers. `T_{22} = 2 clock cycles`.
+	- **$T_{32}$**: Time taken to add a 3-digit number and a 2-digit number. `T_{32} = 3 clock cycles`.
+	- **$T_{42}$**: Time taken to add a 4-digit number and a 2-digit number. `T_{42} = 4 clock cycles`.
+	- **$T_{Div}$**: Time taken to divide a number. `T_{Div} = 10 clock cycles`.
 	- The number of clock cycles for any addition operation can be calculated as `ceil((digits_in_numb1 + digits_in_numb2)/2)`.
 - **Communication Cost (T_{Comm})**: This is the total time taken for all communication between students (nodes) to share their ages and intermediate results.
-	- **T_{Row}**: Time taken to communicate between two seats in the same row. `T_{Row} = 1 clock cycle`.
-	- **T_{Col}**: Time taken to communicate between two seats in the same column. `T_{Col} = 1.5 clock cycles`.
-	- **T_{Diag}**: Time taken to communicate between two seats in a diagonal. `T_{Diag} = 2 clock cycles`.
+	- **$T_{Row}$**: Time taken to communicate between two seats in the same row. `T_{Row} = 1 clock cycle`.
+	- **$T_{Col}$**: Time taken to communicate between two seats in the same column. `T_{Col} = 1.5 clock cycles`.
+	- **$T_{Diag}$**: Time taken to communicate between two seats in a diagonal. `T_{Diag} = 2 clock cycles`.
 
 Immediately, we see that strides within a row are cheaper than strides within a column, so any scenario where `N=M` should be done row-wise if possible. Going diagonally should also be avoided: if we go diagonally, we will end up with a subgroup that is larger than any row-based or column-based subgroup, and thus will be more expensive.
 
