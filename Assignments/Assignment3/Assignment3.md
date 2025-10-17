@@ -54,3 +54,23 @@ The outer loop is also possible to parallelize, but it would be preferable to us
 ### Part 3: Assume this kernel is to be executed on a processor that has 30 GB/sec of memory bandwidth. Will this kernel be memory bound or compute bound?/
 
 This process would be memory bound. The low arithmetic intensity indicates that we would need a lot of memory bandwidth to keep the processor busy. In order to compute 1 FLOP, we would need 5.5 Bytes of memory bandwidth. Therefore, with 30 GB/sec of memory bandwidth, we would be able to perform `30 GB/sec / 5.5 Bytes/FLOP = 5.45 GFLOPS`. This is a relatively low number, indicating that the processor would be waiting on memory access most of the time.
+
+## Problem 2
+
+Let’s now consider the following chip architectures:
+
+- a) 4 core, 4 SMT, 4-wide SIMD capability
+- b) 4 core, 2 interleaved/temporal Multithreading, 16-wide SIMD capability
+- c) 2 core, 4 interleaved/temporal Multithreading, 16-wide SIMD capability
+- d) 4 core, 8-way ILP, 4-wide SIMD capability
+- e) 2 core, 8 interleaved/temporal multithreading, 8-wide SIMD capability
+- f) 8 core, 2 SMT, 2-wide SIMD capability
+
+### Question: Which are the top TWO architectures (out of SIX in total) better suited for a program with the following characteristics and why: Heavy in computations program. Takes input of 1024 array elements. Each element is a measure of “sunlight” sampled exactly every 30 minutes on a city exactly on the Earth’s equator. The result is a positive number when the sun is observed (day) and a negative number when the sun is not observed (night). The program is divergent and also exposes a lot of data re-use. Non-negative elements x[i] follow a heavy computational branch, while negative elements x[i] conduct the following calculation: y[i] = y[i] / x[i].
+
+CPUs `d` and `f` are the best suited for this program. 
+Note that the program is heavy in computations, divergent, and has a lot of data re-use. 
+
+With a heavy computational workload, ILP will be the most beneficial. As we compute many different branches, we will see a heavy divergence in the instruction streams, making SIMD not as effective. Furthermore, the large amount of data re-use would be diluted by using multiple threads. 
+
+Due to the parallelism of CPU `d` being primarily from the 8-Way ILP, it would be the best suited for this program. CPU `f` would be the second best, as it's low SMT count would help reduce cache thrashing and it's low SIMD width would help reduce the impact of divergence when compared to the other CPUs.
