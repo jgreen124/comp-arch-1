@@ -74,3 +74,94 @@ Note that the program is heavy in computations, divergent, and has a lot of data
 With a heavy computational workload, ILP will be the most beneficial. As we compute many different branches, we will see a heavy divergence in the instruction streams, making SIMD not as effective. Furthermore, the large amount of data re-use would be diluted by using multiple threads. 
 
 Due to the parallelism of CPU `d` being primarily from the 8-Way ILP, it would be the best suited for this program. CPU `f` would be the second best, as it's low SMT count would help reduce cache thrashing and it's low SIMD width would help reduce the impact of divergence when compared to the other CPUs.
+
+## Problem 4
+
+Consider the following three CPU organizations:
+- **CPU SS**: A two-core supserscalar microprocessor that provides out-of-order issue capabilities on two FUs. Only a single thread can run on each core at a time.
+- **CPU MT**: A fine-grained multithreaded processor that allows instructions from two threads to be run concurrently (i.e., there are two functional units), though only instructions from a single thread can be issued on any cycle.
+- **CPU SMT**: An SMT processor that allows instructions from two threads to be run concurrently (i.e., there are two functional units), and instructions from either or both threads can be issued to run on any cycle.
+
+Assume we have two threads `X` and `Y` to run on these CPUs that include the following operations:
+
+| Thread X | Thread Y |
+|----------|----------|
+| A1: takes 3 cycles to execute | B1: takes 2 cycles to execute |
+| A2: no dependencies | B2: conflicts for a functional unit with B1 |
+| A3: conflicts for a functional unit with A1 | B3: depends on the result of B2 |
+| A4: depends on the results of A3 | B4 : no dependencies and takes 2 cycles to execute |
+
+Assume all instructions take a single cycle to execute unless noted otherwise or they encounter a hazard.
+
+### Question 1: Assume that you have one SS CPU. How many cycles will it take to execute these two threads? How many issue slots are wasted due to hazards?
+
+Since we have two cores, we can run both threads in parallel (one on each core). Furthermore, each core has two FUs to work with.
+
+For Core 1 (Thread X):
+
+FU1 spends 3 cycles on A1.
+FU2 can execute A2 in parallel with A1, taking 1 cycle.
+A3 must wait for A1 to finish, so A3 will occur on FU1 at cycle number 4, taking 1 cycle.
+A4 must wait for A3 to finish, so A4 will occur on FU1 at cycle 5, taking 1 cycle.
+
+Therefore, Thread X will take 5 cycles to complete. There are 4 cycles wasted where FU1 is doing work while FU2 is idle
+
+| Cycle | FU1       | FU2       |
+|-------|-----------|-----------|
+| 1     | A1 (1/3)  | A2 (1/1)  |
+| 2     | A1 (2/3)  | Idle      |
+| 3     | A1 (3/3)  | Idle      |
+| 4     | A3 (1/1)  | Idle      |
+| 5     | A4 (1/1)  | Idle      |   
+
+For Core 2 (Thread Y):
+FU1 spends 2 cycles on B1.
+B2 needs to wait for B1 to finish, so B2 will occur on FU1 at cycle number 3, taking 1 cycle.
+B3 needs to wait for B2 to finish, so B3 will occur on FU1 at cycle number 4, taking 1 cycle.
+B4 has no dependencies, and can be run on FU2 in parallel with the other instructions.
+
+Therefore, Thread Y will take 4 cycles to complete. There are 2 cycles wasted where FU1 is doing work while FU2 is idle.
+
+| Cycle | FU1       | FU2       |
+|-------|-----------|-----------|
+| 1     | B1 (1/2)  | B4 (1/2)  |
+| 2     | B1 (2/2)  | B4 (2/2)  |
+| 3     | B2 (1/1)  | Idle      |
+| 4     | B3 (1/1)  | Idle      |
+
+In total, we have 6 wasted slots (4 from Thread X and 2 from Thread Y). Since Thread X takes longer to complete, the total number of cycles to execute both threads is 5 cycles.
+
+### Question 2: Now assume you have two SS CPUs. How many cycles will it take to execute these two threads.
+
+Adding additional CPUs does not help in this case, since we only have two threads to execute and a single SS CPU was already able to execute both threads in parallel. Therefore, the total number of cycles to execute both threads remains 5 cycles.
+
+### Question 3: Assume you have one MT CPU. How many cycles will it take to execute these two threads? How many issue slots are wasted due to hazards?
+
+| Cycle | Issuing Thread | FU1      | FU2      |
+| ----- | -------------- | -------- | -------- |
+| 1     | X              | A1 (1/3) | Idle     |
+| 2     | Y              | A1 (2/3) | B4 (1/2) |
+| 3     | —              | A1 (3/3) | B4 (2/2) |
+| 4     | Y              | B1 (1/2) | Idle     |
+| 5     | X              | B1 (2/2) | A2 (2/2) |
+| 6     | X              | A3 (1/1) | Idle     |
+| 7     | X              | A4 (1/1) | Idle     |
+| 8     | Y              | B2 (1/1) | Idle     |
+| 9     | Y              | B3 (1/1) | Idle     |
+
+
+
+In total, we have 6 wasted slots and can run the two threads in 9 cycles, mainly due to the fact that we can only issue instructions from one thread at a time.
+
+### Question 4: Assume you have one SMT CPU. How many cycles will it take to execute these two threads? How many issue slots are wasted due to hazards?
+
+| Cycle | FU1       | FU2       |
+|-------|-----------|-----------|
+| 1     | A1 (1/3)  | B1 (1/2)  |
+| 2     | A1 (2/3)  | B1 (2/2)  |
+| 3     | A1 (3/3)  | B2 (1/1)  |
+| 4     | A3 (1/1)  | B3 (1/1)  |
+| 5     | A4 (1/1)  | B4 (1/2)  |
+| 6     | A2 (1/1)  | B4 (2/2)  |
+
+In total, we have 0 wasted slots and can run the two threads in 6 cycles.
