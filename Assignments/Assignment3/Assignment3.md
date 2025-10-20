@@ -75,6 +75,148 @@ With a heavy computational workload, ILP will be the most beneficial. As we comp
 
 Due to the parallelism of CPU `d` being primarily from the 8-Way ILP, it would be the best suited for this program. CPU `f` would be the second best, as it's low SMT count would help reduce cache thrashing and it's low SIMD width would help reduce the impact of divergence when compared to the other CPUs.
 
+## Problem 3
+
+### Question 1: Diagrams of the different CPU organizations
+
+• Functional Units: Fetch/Decode units (abbreviated F/D unit here)
+
+• SIMD: To support SIMD (single instruction, multiple data), the same instruction encoded in the F/D unit can be executed in parallel for multiple instances of data. Thus, each ALU associated with a F/D unit can execute the instruction for a given instance of data. An 8-way SIMD executes the same instruction for 8 different instructions, using 8 ALUs.
+
+• Instruction level parallelism (ILP): can be achieved when a core has multiple F/D units. The compiler identifies independent instructions in an instruction stream and executes them in parallel using these F/D units. The same ILP processing capability can be provided through various physical architectures.
+
+• Execution Context (EC):
+    - Individual: each ALU gets its own data registers and local state
+    - Shared: all ALUs share the instruction stream and control flow
+    - Each TMP/SMP thread gets its own EC
+
+#### **A: 4 Core, 6 Simultaneous Multithreading, 4-Wide SIMD Capability**
+
+Functional Units: 4 cores x 6 F/D unit / core = 24 F/D units
+ALUs:  4 cores x 6 F/D units x 4 ALUs = 96 ALUs
+ECs: 4 cores x 6 ECs/core= 24 ECs
+
+![CPU A](./images/CPU_A.png)
+[CPU A Diagram](./images/CPU_A.png)
+
+#### **B: 4 core, 4 interleaved/temporal Multithreading (TMP), 6-wide SIMD capability**
+
+Functional Units: 4 cores x 1 F/D unit / core = 4 F/D units
+ALUs:  4 cores x 1 F/D unit x 6 ALUs = 24 ALUs
+ECs: 4 cores x 4 ECs/core = 16 ECs
+
+![CPU B](./images/CPU_B.png)
+
+[CPU B Diagram](./images/CPU_B.png)
+
+#### **C: 2 core, 8-way Instruction Level Parallelism (ILP), 8-wide SIMD capability**
+
+Functional Units: 2 cores x 8 F/D unit / core = 16 F/D units
+ALUs:  2 cores x 8 F/D units x 8 ALUs = 128 ALUs
+ECs: 2 cores x 1 ECs/core = 2 ECs
+
+![CPU C](./images/CPU_C.png)
+
+[CPU C Diagram](./images/CPU_C.png)
+#### **D: 2 core, 6 interleaved/temporal multithreading, 6-wide SIMD capability**
+
+Functional Units: 2 cores x 1 F/D unit / core = 2 F/D units
+ALUs:  2 cores x 1 F/D unit x 6 ALUs = 12 ALUs
+ECs: 2 cores x 6 ECs/core = 12 ECs
+
+![CPU D](./images/CPU_D.png)
+
+[CPU D Diagram](./images/CPU_D.png)
+
+
+### Question 2:
+
+#### 1. How many simultaneous & concurrent instruction streams can we support in each?
+
+- 4 core, 6 Simultaneous Multi Threading, 4-wide SIMD capability
+    - simultaneous IS: 4 core x 6 IS/core = 24 IS
+    - concurrent IS    : 4 core x 6 SMP/core  = 24 IS
+    - If any of the 6 instructions stall, concurrency < 24 IS
+
+- 4 core, 4 interleaved/temporal Multithreading (TMP), 6-wide SIMD capability
+    - simultaneous IS: 4 core x 1 IS/core = 4 IS 
+    - concurrent IS    : 4 core x 4 TMP/core = 16 IS
+
+- 2 core, 8-way Instruction Level Parallelism (ILP), 8-wide SIMD capability
+    - simultaneous IS: 2 core x 1 IS/core = 2 IS 
+    - concurrent IS    : 2 core x 1 thread/core = 2 IS
+
+- 2 core, 6 interleaved/temporal multithreading, 6-wide SIMD capability
+    - simultaneous IS: 2 core x 1 IS/core = 2 IS 
+    - concurrent IS    : 2 core x 6 thread/core = 12 IS 
+
+#### 2. What is the size of the registers in the execution contexts of each chip?
+
+Each core has 32 registers of 64 bits each, forming a native execution context for that core. These registers are then accessed as vectors to provide parallel access to an array of registers within the same read instruction, supporting SIMD parallelism. 
+
+Thus:
+
+- 4-wide SIMD: 4x64 = 256 bit-vector registers
+- 6-wide SIMD: 6x64 = 384 bit-vector registers
+- 8-wide SIMD: 8x64 = 512 bit-vector registers
+- 6-wide SIMD: 6x64 = 384 bit-vector registers
+
+#### 3. Which of (b, c, d) offers max latency reduction? Which offers the minimum?
+
+(d) provides the most number of threads per core. This is better for latency reduction since there are more execution contexts available to swap into, upon hitting a memory stall. Conversely, while (c) offers 8 way ILP, it is only single threaded. Suppose all 8 ILP instructions perform I/O. In this instance, the CPU would idle until one of the instructions returns. This is the worst case for latency reduction and overall CPU utilization. 
+
+#### 4. How many work units to maximize latency hiding? Compare c and d and justify.
+
+In order to maximize latency hiding, the maximum number of available threads should be concurrently exercised per core such that the CPU should minimize idling.  
+
+- a) 4 core, 6 Simultaneous Multi Threading, 4-wide SIMD capability
+    - 4 cores x 6 SMT instructions can be simultaneously executed = 24 simultaneous instructions. Ideally, these are executed for 4 work units each (SIMD), yielding 24 x 4 = 96 work units being concurrently processed. 
+
+- b) 4 core, 4 interleaved/temporal Multithreading (TMP), 6-wide SIMD capability
+    - 4 cores x 4 TMP instructions can be simultaneously executed = 16 concurrent instructions.  Through SIMD, these are executed for 6 work units each, yielding 16 x 6 = 96 work units being concurrently processed. 
+
+- c) 2 core, 8-way Instruction Level Parallelism (ILP), 8-wide SIMD capability
+    - 2 cores x 1 thread/core yields a maximum of 2 concurrent threads across the processor. Through SIMD, this chip can only process 2 x 8 = 16 work units concurrently. 
+
+- d) 2 core, 6 interleaved/temporal multithreading, 6-wide SIMD capability
+    - Similar to earlier examples, to maximize latency hiding, we need 2 cores x 6 TMP instructions/core x 6 ALUs = 72 working units concurrently. 
+
+
+Comparing (c) and (d), we observe that (d) offers significantly more multi-threading as opposed to the 8-way ILP processing that (c) offers. Latency hiding is dependent on context swaps to a different unblocked thread during memory stalls. Thus, (d) provides a significantly better concurrent throughput (assuming the two are running the same program which includes stalls). 
+
+
+#### 5 and 6. For which chips would the compiler do the most and least work respectively?
+
+The compiler for (c) would need to work the hardest to find sections of the instruction stream that could be parallelized to saturate a chip that can support 8-way ILP. Alternatively, each core in (b) can only support 1 instruction anyway, so the compiler does not even need to look for ILP in the program. 
+
+#### 7. For what programs would (b) perform better than (d)? What about (d) vs (b)?
+
+Recall: 
+
+- (b) 4 core, 4 interleaved/TMP, 6-wide SIMD
+- (d) 2 core, 6 interleaved/TMP, 6-wide SIMD
+
+(b) includes more cores but supports less multithreading. This lends itself more to programs that cause fewer stalls (ex: fetch/writebacks to main memory). Programs that exhibit more ILP or a higher ratio of backend to frontend instructions run faster on (b). In other words, programs that lend themselves to more continuous CPU utilization will perform better. 
+
+(d) includes fewer cores. Thus, it is less capable than (b) for pure parallel computation with minimal memory stalls. However, for programs with more I/O or other types of memory stalls, each core offers 2 more threads. In the event of lots of blocking calls, more threads can perform better latency hiding, improving CPU utilization over (b). 
+
+
+#### 8. Suppose we run a program with high temporal locality. Do we want:
+
+- Large cache and no/few threads?
+- small/no cache by many hardware threads?
+- Large cache, many hardware threads?
+
+High temporal locality indicates that the same data is being read multiple times in a short time interval. To avoid I/O reads/writes causing huge memory stalls, the processor should primarily read and write to cache. This reduces memory stalls to a handful of clock cycles per read/write. 
+
+For a program with high temporal locality, the larger the cache, the better the payoff to perform read/write operations (effectively, cache gets hit much more than main memory). 
+
+Since memory stalls are much shorter, CPU utilization increases. Threading is primarily implemented to hide latency caused by memory stalls. Thus, fewer threads can be implemented, allowing for larger execution contexts per thread. 
+
+With many hardware threads but a smaller cache, only a smaller subset of temporally local data can be stored at any one time. This would necessitate more calls to main memory. Threading would not help with this issue, as each thread would simply issue more calls to main memory due to continued cache misses. 
+
+Once again, because threading only improves throughput through latency hiding, it is only helpful for an application with many calls to main memory. With a large cache, the CPU would not be stalled for very long, so its utilization might already be saturated. Adding more threads would have no effect on throughput.
+
 ## Problem 4
 
 Consider the following three CPU organizations:
