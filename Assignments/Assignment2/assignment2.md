@@ -1,4 +1,5 @@
-# Assignment 2 
+# Assignment 2
+**Josh Green and Akhil Sankar**
 
 ## Problem 1
 
@@ -74,16 +75,16 @@ wishful thinking!). Good luck!
 While the problem specifies the number of columns and rows, I prefer to think of it a little more abstractly at first. Let `N` be the number of rows and `M` be the number of columns. The total number of students isn't necessarily `N * M`, as some seats may be empty, but there won't be any more than `N * M` students in the class.
 
 There are two main considerations when it comes to time complexity. Let's define them as follows:
-- **Computation Cost (T_{Comp})**: The time taken for a single computation. These will be defined as:
-	- **T_{22}**: Time taken to add two 2-digit numbers. `T_{22} = 2 clock cycles`.
-	- **T_{32}**: Time taken to add a 3-digit number and a 2-digit number. `T_{32} = 3 clock cycles`.
-	- **T_{42}**: Time taken to add a 4-digit number and a 2-digit number. `T_{42} = 4 clock cycles`.
-	- **T_{Div}**: Time taken to divide a number. `T_{Div} = 10 clock cycles`.
+- **Computation Cost ($T_{Comp}$)**: The time taken for a single computation. These will be defined as:
+	- **$T_{22}$**: Time taken to add two 2-digit numbers. `T_{22} = 2 clock cycles`.
+	- **$T_{32}$**: Time taken to add a 3-digit number and a 2-digit number. `T_{32} = 3 clock cycles`.
+	- **$T_{42}$**: Time taken to add a 4-digit number and a 2-digit number. `T_{42} = 4 clock cycles`.
+	- **$T_{Div}$**: Time taken to divide a number. `T_{Div} = 10 clock cycles`.
 	- The number of clock cycles for any addition operation can be calculated as `ceil((digits_in_numb1 + digits_in_numb2)/2)`.
-- **Communication Cost (T_{Comm})**: This is the total time taken for all communication between students (nodes) to share their ages and intermediate results.
-	- **T_{Row}**: Time taken to communicate between two seats in the same row. `T_{Row} = 1 clock cycle`.
-	- **T_{Col}**: Time taken to communicate between two seats in the same column. `T_{Col} = 1.5 clock cycles`.
-	- **T_{Diag}**: Time taken to communicate between two seats in a diagonal. `T_{Diag} = 2 clock cycles`.
+- **Communication Cost ($T_{Comm}$)**: This is the total time taken for all communication between students (nodes) to share their ages and intermediate results.
+	- **$T_{Row}$**: Time taken to communicate between two seats in the same row. `T_{Row} = 1 clock cycle`.
+	- **$T_{Col}$**: Time taken to communicate between two seats in the same column. `T_{Col} = 1.5 clock cycles`.
+	- **$T_{Diag}$**: Time taken to communicate between two seats in a diagonal. `T_{Diag} = 2 clock cycles`.
 
 Immediately, we see that strides within a row are cheaper than strides within a column, so any scenario where `N=M` should be done row-wise if possible. Going diagonally should also be avoided: if we go diagonally, we will end up with a subgroup that is larger than any row-based or column-based subgroup, and thus will be more expensive.
 
@@ -125,3 +126,124 @@ In conclusion, we have analyzed the time complexity of computing the average age
 - If the age of people is higher than what we assumed, the computation cost can become more expensive as the cumulative sum grows larger faster
 - If `M>>>N`, then column-wise addition will be more efficient (computation time exceeds communication time)
 - If we don't use nodes directly adjacent to each other, we also need to account for the increased communication cost
+
+## Problem 3
+
+Both parts A and B (1 through 3) are combined in this part. The other sections of part 2 are answered after this part.
+
+Some Notes:
+- **Functional Unites**: Fetch/Decode Units, abbreviated as `F/D unit`
+- **SIMD**: To support SIMD, the same instruction encoded in the F/D unit can be executed in parallel for multiple instances of data. Thus, each ALU associated with an F/D unit can execute the instruction for a given instance of data. An 8-way SIMD executes the same instruction for 8 different instructions, using 8 ALUs.
+- **Instruction Level Parallelism (ILP)**: Can be achieved when a core has multiple F/D units. The compiler identifies independent instructions in an instruction stream and executes them in parallel using these F/D units.
+- **Execution Context (EC)**: 
+ - Individual: Each ALU gets its own data registers and local state.
+ - Shared: All ALUs share the instruction stream and control flow.
+
+ ### Part A: 4 Core, 16 Wide SIMD
+[4 Core, 16 Wide SIMD](./4core16simd.png)
+![4 Core, 16 Wide SIMD](./4core16simd.png)
+#### Part 1
+- **Functional Units**: 1 F/D unit per core, so 4 total
+- **ALUs**: 16 ALUs per core, so 64 total
+- **Execution Context**: 1 per ALU and shared EC as noted above
+
+#### Part 2
+- **# of Instruction Streams**: 4 instruction streams across cores (one per F/D unit)
+- **# of elements executed:** 64 elements processed in parallel across all cores (64 ALUs)
+- **size of registers in ECs**: 32-bit wide each
+
+### Part B: 
+[8 Core, 4 Wide SIMD, 2 way ILP](./8core4simd2ilp.png)
+![8 Core, 4 Wide SIMD, 2 way ILP](./8core4simd2ilp.png)
+
+Each core is capable of 2-way ILP, meaning that each core has 2 independent units with their own F/D unit, ALUs, and registers. Each unit is also 4-way SIMD compatibile, using all 4 ALUs to execute 1 instruction for 4 data instances in parallel.
+#### Part 1
+- **Functional Units**: 2 F/D units per core, so 16 total
+- **ALUs**: 8 ALUs per core, so 64 total
+- **Execution Context**: each super-scalar unit provides dedicated ECs and shared EC to access the common instruction.
+
+#### Part 2
+- **# of Instruction Streams**: 16 instruction streams across all cores (one per F/D unit)
+- **# of elements executed:** 64 elements processed in parallel across all cores (64 ALUs)
+- **size of registers in ECs**: 32-bit wide each
+
+### Part C: 
+[2 Core, 4-Wide SIMD, 8-way ILP](./2core4simd8ilp.png)
+![2 Core, 4 Wide SIMD, 8 way ILP](./2core4simd8ilp.png)
+
+This architecture is similar (at the core-level) to the previous example in Part B. However, this time, each core is capable of 8-way ILP (i.e. can execute 8 instructions in parallel). This means that each core has independent units composed of their own F/D, ALUs and registers. Further, each unit also is capable of 4-way SIMD, using 4 ALUs, to execute 1 instruction for 4 data instances in parallel.
+
+#### Part 1
+- **Functional Units**: 8 F/D units per core, so 16 total
+- **ALUs**: 32 ALUs per core, so 64 total
+- **Execution Context**: each independent unit provides dedicated ECs and shared EC to access the common instruction
+
+#### Part 2
+- **# of Instruction Streams**: 16 instruction streams across all cores (one per F/D unit)
+- **# of elements executed:** 64 elements processed in parallel across all cores (64 ALUs)
+- **size of registers in ECs**: 32-bit wide each
+
+### Part D:
+[16 Core, 2-wide SIMD, 2-way ILP](./16core2simd2ilp.png)
+![16 Core, 2 Wide SIMD, 2 way ILP](./16core2simd2ilp.png)
+
+This architecture is similar (at the core-level) to the previous example in Part B. However, this time, each core is capable of 8-way ILP (i.e. can execute 8 instructions in parallel). This means that each core has independent units composed of their own F/D, ALUs and registers. Further, each unit also is capable of 4-way SIMD, using 4 ALUs, to execute 1 instruction for 4 data instances in parallel.
+
+#### Part 1
+- **Functional Units**: 2 F/D units per core, so 32 total
+- **ALUs**: 4 ALUs per core, so 64 total
+- **Execution Context**: each independent unit provides dedicated ECs and shared EC to access the common instruction
+
+#### Part 2
+- **# of Instruction Streams**: 32 instruction streams across all cores (one per F/D unit)
+- **# of elements executed:** 64 elements processed in parallel across all cores (64 ALUs)
+- **size of registers in ECs**: 32-bit wide each
+
+### Part E:
+[4 Core, 8 Wide SIMD, 2-Way ILP](./4core8simd2ilp.png)
+![4 Core, 8 Wide SIMD, 2 way ILP](./4core8simd2ilp.png)
+
+#### Part 1
+- **Functional Units**: 2 F/D units per core, so 8 total
+- **ALUs**: 16 ALUs per core, so 64 total
+- **Execution Context**: each independent unit provides dedicated ECs and shared EC to access the common instruction
+
+#### Part 2
+- **# of Instruction Streams**: 8 instruction streams across cores (one per F/D unit)
+- **# of elements executed:** 64 elements processed in parallel across all cores (64 ALUs)
+- **size of registers in ECs**: 32-bit wide each
+
+## Part 2 Continued
+- Part 4: Diversion: measure of conditionality (ie. non-linear instruction flow) in software
+	- The 16 core, 2-wide SIMD, 2 way ILP can fetch and decode 32 independent (different) instruction streams in parallel, making it the best option to parallelize for strongly divergent code.
+	- In contrast, the 4 core, 16 wide SIMD option is likely the least efficient for divergent code. In a SIMD architecture, all the ALUs must run the same instruction. Thus, in the event of a divergent instruction stream, all the ALUs will run every instruction over all conditional blocks, discarding the invalid conditional branch post-execution. This is a waste of CPU cycles, as seen in the diagram below:
+![Divergent Code Example](./DivergentCodeExample.png)
+
+- Parts 5 and 6: The compiler is responsible for identifying potential instruction level parallelism (ILP) within user level software and optimally leveraging the available hardware functional units to achieve parallelism. 
+  - The compiler is most heavily involved determining ILP for architectures with the most F/D units: 16 core, 2-wide SIMD, 2 way ILP (providing 32 F/D units)
+  - The compiler would perform the least ILP compute for the 4 core, 16 wide SIMD architecture (just 4 F/D units).
+
+- Part 7: Comparing Chips (8 core, 4 wide SIMD, 2 way ILP vs 16 core, 2-wide simd, 2 way ILP)
+  - Taylor Expansion (TE) performance: TE logic can only be parallelized effectively across its outer loop (i.e. its inner loop must be processed sequentially due to upstream dependencies). However, the SIMD architecture would be more limited in its ability to process the inner loop (added degree of divergence), as discussed above. Therefore, the more superscalar (d) option would be more efficient for this algorithm.
+  - Other algorithm performance: considering more "embarrassingly parallel problems” such as in Monte Carlo simulations (flipping 1 million independent coins), where there is little divergence or sequential dependence, SIMD would be equally efficient (perhaps even more so since it would not employ as many F/D operations)
+
+## Part 3
+Given: 
+- duration of sequential TE iteration: 150 clock cycles = 300 nsec/external iteration.
+- workload: 6000 iterations
+- Best case: 64 outer loops processed in parallel (common across architectures)
+- Worse case: 6000 * 300 = 1.8M cycles (completely sequential)
+  - We will consider a completely sequential pipeline for the worst case scenario. In these cases, SIMD will collapse to just 1 sequential pipeline.
+- Architecture
+
+| Architecture                        | Best Performance (nsec)      | Worst Performance (nsec) |
+|-------------------------------------|-----------------------------|--------------------------|
+| 4 core, 16 wide SIMD                | 6000/64 * 300 = 281.2K      | 6000 * 300 = 1.8M        |
+| 8 core, 4 wide SIMD, 2 way ILP      | 6000/64 * 300 = 281.2K      | 6000/16 * 300 = 112.5K   |
+| 2 core, 4-wide SIMD, 8-way ILP      | 6000/64 * 300 = 281.2K      | 6000/16 * 300 = 112.5K   |
+| 16 core, 2-wide SIMD, 2 way ILP     | 6000/64 * 300 = 281.2K      | 6000/32 * 300 = 56.25K   |
+| 4 core, 8-wide SIMD, 2 way ILP      | 6000/64 * 300 = 281.2K      | 6000/8 * 300 = 225K      |
+
+
+
+
