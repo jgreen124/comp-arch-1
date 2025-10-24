@@ -114,9 +114,19 @@ Make sure we are using the PISA simulator. We will be using the test-math progra
 
 | Miss Ratio (D-cache) | 1 way | 2 way | 4 way | 8 way |
 | ---------------------| ----- | ----- | ----- | ----- |
-| 32 | 0.0266 | 0.0290
-| 64 |
-| 128 |
-| 256 |
-| 512 |
+| 32 | 0.1359 |.0568 | 0.0290 | 0.0226 |
+| 64 | 0.0761 | 0.0360 | 0.023 | 0.023 |
+| 128 | 0.0491 | 0.0274 | 0.0224 | 0.0216 |
+| 256 | 0.0342 | 0.0240 | 0.0216 | 0.0215 |
+| 512 | 0.0256 | 0.0218 | 0.0215 | 0.0215 |
 
+
+[GraphFor2](./GraphFor2)
+#### Questions
+1. For a given number of sets, increasing associativity results in lower cache miss rates for both I and D cache.
+2. For a given associativity, increasing the number of sets also decreases the miss rate for both I and D cache.
+3. For a given cache size, the miss ratio decrease with more associativity, but this relationship is not linear, with most of the improvement realized at 4 way association.
+
+For 4 and 5, we are capped at 4KB cache size, so with 16 byte block size, we will get 256 blocks. Therefore, we should pick the arrangement where the miss rate is lowest and the `#sets * #association = 256`
+4. If I were limited to a I-cache size of 4KB, I would use the 32 sets, 8 way associativity configuration. 
+5. If I were limited to a D-cache size of 4 KB, I would use the 32 sets, 8 way association configuration.
