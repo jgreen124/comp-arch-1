@@ -121,7 +121,8 @@ Make sure we are using the PISA simulator. We will be using the test-math progra
 | 512 | 0.0256 | 0.0218 | 0.0215 | 0.0215 |
 
 
-[GraphFor2](./GraphFor2)
+![I-cache](./IcacheComp.png)
+![D-cache](./DcacheComp.png)
 #### Questions
 1. For a given number of sets, increasing associativity results in lower cache miss rates for both I and D cache.
 2. For a given associativity, increasing the number of sets also decreases the miss rate for both I and D cache.
