@@ -95,5 +95,6 @@ The average non-conditional branch instruction count between contidional branch 
 | test-llong | 20549 | 10.10 | 21.59 | 4.78 | 12.26 | 51.22 | 0.00 |
 | test-printf | 1259941 | 41.30 | 9.17 | 5.83 | 14.37 | 56.31 | 0.02 | 
 
-# Include a histogram of the differences here
+![Comparison1](./comparison1.png)
+![Comparison2](./comparison2.png)
 
