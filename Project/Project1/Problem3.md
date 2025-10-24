@@ -98,3 +98,25 @@ The average non-conditional branch instruction count between contidional branch 
 ![Comparison1](./comparison1.png)
 ![Comparison2](./comparison2.png)
 
+
+### Lab Experiment 6 
+
+Make sure we are using the PISA simulator. We will be using the test-math program in the `simplesim-3.0/tests-pisa/bin/` directory.
+
+| Miss Ratio (I-cache) | 1 way | 2 way | 4 way | 8 way |
+| ---------------------| ----- | ----- | ----- | ----- |
+| 32 | 0.4133 | 0.3694 | 0.2940 | 0.1997 | 
+| 64 | 0.3731 | 0.2985 | 0.2314 | 0.1627 |
+| 128 | 0.3114 | 0.2321 | 0.1615 | 0.0852 |
+| 256 | 0.2530 | 0.1699 | 0.0861 | 0.0177 |
+| 512 | 0.1816 | 0.0948 | 0.0310 | 0.0154 |
+
+
+| Miss Ratio (D-cache) | 1 way | 2 way | 4 way | 8 way |
+| ---------------------| ----- | ----- | ----- | ----- |
+| 32 | 0.0266 | 0.0290
+| 64 |
+| 128 |
+| 256 |
+| 512 |
+

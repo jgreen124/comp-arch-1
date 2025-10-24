@@ -1,4 +1,4 @@
-# Continued Discussion on CPU Basic Architecture
+pre# Continued Discussion on CPU Basic Architecture
 
 To increase performance, we can add more ALUs to increase. compute capability.
 * Each ALU will have its own partition of registers from cache
