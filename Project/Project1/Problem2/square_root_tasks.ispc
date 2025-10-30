@@ -1,4 +1,5 @@
-// Function executed by each launched task
+// square_root_tasks.ispc
+
 task void square_root_task(uniform const float *uniform input,
                            uniform float *uniform output,
                            uniform int count,
@@ -9,25 +10,35 @@ task void square_root_task(uniform const float *uniform input,
     uniform int start  = tIndex * chunk;
     uniform int end    = min((tIndex + 1) * chunk, count);
 
-    // Loop variable declared as uniform before foreach
-    uniform int i;
+    if (tIndex == 0)
+        print("Entered square_root_task(): start=%d end=%d numTasks=%d\n",
+              start, end, numTasks);
+
     foreach (i = start ... end) {
         float s = input[i];
-        float x = s > 0.0f ? s : 0.0f;
-        for (int j = 0; j < 20; ++j) {
+        float x = (s > 0.0f) ? s : 0.0f;
+        for (int it = 0; it < 20; ++it) {
             x = 0.5f * (x + s / x);
-            if (abs(x * x - s) < 1e-4f)
-                break;
+            if (abs(x * x - s) < 1e-4f) break;
         }
         output[i] = x;
     }
 }
 
-// Exported launcher that spawns numTasks tasks
 export void square_root_ispc_tasks(uniform const float *uniform input,
                                    uniform float *uniform output,
                                    uniform int count,
                                    uniform int numTasks)
 {
+    print("DEBUG: count=%d numTasks=%d\n", count, numTasks);
     launch[numTasks] square_root_task(input, output, count, numTasks);
+}
+
+// Debug helper: bypass launch[] and just run the body once (for isolation)
+export void square_root_ispc_tasks_nolaunch(uniform const float *uniform input,
+                                            uniform float *uniform output,
+                                            uniform int count,
+                                            uniform int numTasks)
+{
+    square_root_task(input, output, count, numTasks);
 }

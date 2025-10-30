@@ -1,51 +1,62 @@
-// Minimal ISPC task system implementation
+// tasksys.cpp — minimal runtime matching ISPC symbols (ISPCAlloc/ISPCLaunch/ISPCSync)
+// Works with typical ISPC 1.22–1.29 Linux builds. Link with -pthread.
+
 #include <pthread.h>
 #include <vector>
-#include <functional>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
-#include <cassert>
 
-typedef void (*TaskFunc)(void *data, int threadIndex, int threadCount, void *extra);
+using ISPCTaskFunc = void (*)(void *data, int32_t threadIndex, int32_t threadCount);
 
-struct TaskInfo {
-    TaskFunc func;
+struct ThreadInfo {
+    ISPCTaskFunc func;
     void *data;
-    int threadIndex;
-    int threadCount;
-    void *extra;
+    int32_t tid;
+    int32_t total;
 };
 
-void *ThreadMain(void *arg) {
-    TaskInfo *info = (TaskInfo *)arg;
-    info->func(info->data, info->threadIndex, info->threadCount, info->extra);
+static void *threadMain(void *arg) {
+    ThreadInfo *t = (ThreadInfo *)arg;
+    t->func(t->data, t->tid, t->total);
     return nullptr;
 }
 
-// Called by ISPC to allocate a task system context
-extern "C" void *ISPCAlloc(void **handlePtr, int32_t size) {
-    void *ptr = malloc(size);
-    memset(ptr, 0, size);
-    *handlePtr = ptr;
-    return ptr;
+extern "C" {
+
+// Opaque per-launch storage (not used beyond satisfying symbol)
+void *ISPCAlloc(void **handlePtr, int32_t size) {
+    void *mem = std::malloc((size_t)size);
+    if (mem) std::memset(mem, 0, (size_t)size);
+    if (handlePtr) *handlePtr = mem;
+    return mem;
 }
 
-// Called by ISPC to launch tasks
-extern "C" void ISPCLaunch(void *f, void *data, int count, int taskCount, void *extra) {
-    TaskFunc func = (TaskFunc)f;
-    std::vector<pthread_t> threads(taskCount);
-    std::vector<TaskInfo> infos(taskCount);
+// Main entry that ISPC calls for launch[numTasks]
+void ISPCLaunch(void *f, void *data, int /*count*/, int32_t taskCount) {
+    ISPCTaskFunc func = (ISPCTaskFunc)f;
 
-    for (int i = 0; i < taskCount; ++i) {
-        infos[i] = { func, data, i, taskCount, extra };
-        pthread_create(&threads[i], nullptr, ThreadMain, &infos[i]);
+    if (taskCount <= 1) {
+        func(data, 0, 1);
+        return;
     }
 
-    for (int i = 0; i < taskCount; ++i)
-        pthread_join(threads[i], nullptr);
+    // Allocate on heap so addresses stay valid while threads run
+    ThreadInfo *info = (ThreadInfo*)std::malloc(sizeof(ThreadInfo) * (size_t)taskCount);
+    for (int32_t i = 0; i < taskCount; ++i)
+        info[i] = ThreadInfo{ func, data, i, taskCount };
+
+    std::vector<pthread_t> threads((size_t)(taskCount - 1));
+    for (int32_t i = 1; i < taskCount; ++i)
+        pthread_create(&threads[(size_t)i - 1], nullptr, threadMain, &info[i]);
+
+    // Run task 0 on caller thread
+    threadMain(&info[0]);
+
+    for (auto &th : threads) pthread_join(th, nullptr);
+    std::free(info);
 }
 
-// Called by ISPC to synchronize after launching
-extern "C" void ISPCSync(void *) {
-    // Nothing needed — threads joined in ISPCLaunch
-}
+void ISPCSync(void * /*handle*/) { /* already joined */ }
+
+} // extern "C"
