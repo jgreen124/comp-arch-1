@@ -51,7 +51,10 @@ int main() {
 
     for (int numTasks : {1, 2, 4, 8}) {
         t1 = high_resolution_clock::now();
-        square_root_ispc_tasks(input.data(), out_ispc.data(), N, numTasks);
+        
+        // square_root_ispc_tasks(input.data(), out_ispc.data(), N, numTasks);
+        square_root_ispc_tasks_nolaunch(input.data(), out_ispc.data(), N, 1);
+        
         t2 = high_resolution_clock::now();
         double t_tasks = duration<double>(t2 - t1).count();
 
