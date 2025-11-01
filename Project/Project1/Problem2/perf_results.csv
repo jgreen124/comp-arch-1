@@ -1,0 +1,1 @@
+n,tasks,avg_serial_s,avg_simd_s,avg_task_time_s,simd_speedup,task_speedup_vs_serial,task_speedup_vs_simd
