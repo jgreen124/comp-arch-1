@@ -1,4 +1,5 @@
 #pragma once
+#include <cstddef>
 
-// Scalar baseline for correctness and speed up comparison
-void square_root_serial(const float* input, float* output, int count);
+// Serial Newton square root method for baseline
+void square_root_serial(const float* in, float* out, int n);
