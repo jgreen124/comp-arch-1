@@ -166,3 +166,33 @@ void solve(float* A){
 }
 ```
 
+### Why 3 states is sufficient:
+
+There are two cross-thread races that need to be prevented:
+1. Reset-vs-Accumulate race: zeroing a slot while another thread is still adding to it for the *current* iteration
+2. Reset-vs-Read race: zeroing a slot while another thread is still *reading* it for the convergence test of the *previous* iteration.
+
+The order of the code is essentially:
+1. add
+2. zero
+3. barrier
+4. read
+5. index++
+
+The barrier ensures that no thread can start the `read and advance` part of an iteration until every thread has finished both accumulating and zeroing. All adds happen before the barrier, and no thread resets in the same iteration.
+
+Next, we want to make sure that a future iteration does not affect a value still being read by a different thread. With the triple buffer we have set up:
+- Iteration `t+2` is the earliest iteration that can zero
+
+As a result, we always get that a thread reads a result before Iteration `t+2` resets it. This prevents the second race condition.
+
+Therefore, three states is enough to handle both of these conditions.
+
+### Why 2 states is not sufficient
+If the sum index is `t mod 2`, and the zero index is `t+1 mod 2`, a counter example can be shown.
+- At iteration *t*, threads add to `t mod 2` index, and zero at `(t+1 mod 2)` indexes, and then we advance to the next iteration
+- At iteration `t+1`, each thread zeros before the barrier.
+
+If a slow thread is iterating just before the barrier, it will soon read from the index that is being used for summing, but a different iteration can zero the index if it is faster.
+
+
