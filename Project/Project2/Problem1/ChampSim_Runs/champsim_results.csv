@@ -1,0 +1,5 @@
+cores,trace,workload_label,warmup,sim,ipc
+1,600.perlbench_s-210B.champsimtrace.xz,compute,1000000,10000000,2.158
+1,429.mcf-184B.champsimtrace.xz,mem_bound,1000000,10000000,0.08199
+4,600.perlbench_s-210B.champsimtrace.xz,compute,1000000,10000000,2.143
+4,429.mcf-184B.champsimtrace.xz,mem_bound,1000000,10000000,0.05835
