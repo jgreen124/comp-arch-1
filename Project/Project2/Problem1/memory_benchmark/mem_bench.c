@@ -1,5 +1,4 @@
 // mem_bench.c
-// Fully portable version for Linux/macOS/WSL, no feature-macro issues.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,21 +6,14 @@
 #include <string.h>
 #include <sys/time.h>
 
-/*
- * Portable monotonically increasing timer.
- * Uses gettimeofday() which is universally available.
- */
+// Timer
 static double now_seconds(void) {
     struct timeval tv;
     gettimeofday(&tv, NULL);
     return (double)tv.tv_sec + (double)tv.tv_usec * 1e-6;
 }
 
-/*
- * Aligned allocation.
- * aligned_alloc() is C11 and works everywhere except older macOS.
- * If aligned_alloc fails (NULL or non-multiple), fall back to malloc().
- */
+// Aligned allocation
 static void* alloc_aligned(size_t size, size_t alignment) {
     // aligned_alloc requires size % alignment == 0
     size_t rounded = size;
@@ -37,9 +29,7 @@ static void* alloc_aligned(size_t size, size_t alignment) {
 }
 
 
-/*
- * CACHE SWEEP
- */
+// Cache Sweep Benchmark
 static void run_cache_sweep(void) {
     const size_t min_size_bytes = 1 * 1024;
     const size_t max_size_bytes = 256 * 1024 * 1024;
@@ -94,9 +84,8 @@ static void run_cache_sweep(void) {
 }
 
 
-/*
- * STREAMING BANDWIDTH (DRAM or cache depending on size)
- */
+// Streaming Bandwidth (For cache or DRAM depending on size)
+ 
 static void run_stream(size_t size_bytes, const char *mode) {
     const size_t alignment = 64;
     size_t n = size_bytes / sizeof(double);

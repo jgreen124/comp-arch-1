@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Problem1.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="project-2-problem-1">Project 2 Problem 1</h1>
+<p>This is the writeup/documentation for Problem 1</p>
+<h2 id="part-a---experiment-on-own-machine">Part A - Experiment on own machine</h2>
+<p>For this part, we can run a simple kernel that repeatedly reads/writes a small array many times. We can increase the array size and see where the <code>runtime/element</code> jumps.</p>
+<h3 id="memory-benchmark">Memory Benchmark</h3>
+<p>The <code>./memory_benchmark</code> directory contains files that will perform benchmarks to obtain data for the cache size and performance of the specific computer that the task is running on.</p>
+<p>Inside the <code>./memory_benchmark</code> directory:</p>
+<ul>
+<li><code>mem_bench.c</code>: a program that repeatedly writes an array, changing the amount of data written each time</li>
+<li><code>mem_experiment.sh</code>: a shell script to automatically run <code>mem_bench.c</code> and to collect the necessary data into .csv files</li>
+<li><code>plot_all.py</code>: a python script to plot the data from the corresponding .csv files.</li>
+</ul>
+<p>To run the test, just open up a terminal and run:</p>
+<pre class="hljs"><code><div>chmod +x ./mem_experiment.sh
+./mem_experiment.sh
+python3 plot_all.py
+</div></code></pre>
+<h3 id="benchmark-analysis">Benchmark Analysis</h3>
+<p>Below is a plot showing the data from <code>cache_sweep.csv</code></p>
+<p><img src="cache_sweep.png" alt="cache_sweep"></p>
+<p>From the plot, we see three distinct drops.</p>
+<ul>
+<li>With block sizes less than 64 KB, we see a bandwidth between 150-160 GB/s. This is the L1 cache performance. The plot shows the L1 cache size to be about 32KB.</li>
+<li>With block sizes between 64KB - 512 KB, we observe a throughput between 130 GB/s to 150 GB/s. We can find the size of the L2 cache by observing where the second plateau ends, which occurs at around 0.5MB. While this doesn't necessarily indicate the size of the L2 cache, it does indicate the effective reuse window to be around 512 KB</li>
+<li>The last plateau is for the L3 cache, which can be observed to have a throughput of 10-15 GB/s, and a working set size of 4-8 MB.</li>
+</ul>
+<p>These tests were run on a laptop with an Intel Ultra 7 155H. We can use <a href="https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html">Intel's page for the 155H specs</a> to see that our experiments are within reasonable ranges, especially considering that we will be measuring effective cache usage as opposed to the total cache as reported by Intel.</p>
+<h2 id="part-b---champsim-simulations">Part B - ChampSim Simulations</h2>
+<p>For this part, we install the <code>ChampSim</code> simulator. A 1-core and 4-core version of the base architecture is used, and the same instruciton window, branch predictor, cache hierarchy, and DRAM model are used. 1 million warmup instructions were used and 10 million simulation instructions were used for the simulations, mainly due to run time length being very long if we scaled up the numbers here.</p>
+<p>Two traces were used for evaluation:</p>
+<ul>
+<li><code>600.perlbench_s-210B</code> for a compute-intensive trace with high instruction mix and good locality</li>
+<li><code>420.mcf-184B</code> for a memory-bound trace with pointer-chasing and poor locality</li>
+</ul>
+<h3 id="champsim-results">ChampSim Results</h3>
+<p>To run the benchmarks, there is a <code>run_champsim_experiments.sh</code> file located in the <code>./ChampSim_Runs</code> directory, with results being output in the <code>./ChampSim_Runs/results_txt</code> directory. Below is a table showing the IPC values extracted from ChampSim</p>
+<table>
+<thead>
+<tr>
+<th>Cores</th>
+<th>Workload</th>
+<th>IPC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1-core</td>
+<td>Perlbench</td>
+<td>about 1.75-1.9</td>
+</tr>
+<tr>
+<td>1-core</td>
+<td>MCF</td>
+<td>about 0.08</td>
+</tr>
+<tr>
+<td>4-core</td>
+<td>Perlbench</td>
+<td>about 2.1 per core</td>
+</tr>
+<tr>
+<td>4-core</td>
+<td>MCF</td>
+<td>about 0.058 per core</td>
+</tr>
+</tbody>
+</table>
+<p>From these results, we can observe that compute workloads scale well with more cores, and memory-bound workloads do not scale well with more cores.</p>
+<h3 id="result-analysis">Result Analysis</h3>
+<p>From the test, Perlbench exhibits:</p>
+<ul>
+<li>High L1 hit rates</li>
+<li>Good spatial locality</li>
+<li>Modest pressure on lower cache levels</li>
+<li>Low DRAM request volume</li>
+<li>Low DRAM buffer miss rates</li>
+</ul>
+<p>As a result, Perlbench achieves a high 1-core IPC with good multicore scaling. This relation won't be linear with core count, but we do see this trend due to increased superscalar utilization, effective branch prediction, and low shared-resource contention. Furthermore, the memory latency and bandwidth have minor impacts here because the working sets fit within the L1/L2 caches.</p>
+<p>From the test, MCF performs very differently:</p>
+<ul>
+<li>Thrashes private caches</li>
+<li>Dominated by pointer-chasing workloads with poor locality</li>
+<li>Generates enormous numbers of LLC and DRAM misses</li>
+<li>Experiences miss latencies in the hundreds of cycles</li>
+</ul>
+<p>This means that adding cores does not scale the IPC, and can even hurt performance due to shared bandwidth and LLC contention. We also observe tens of thousands of row buffer misses, 95% row miss ratio, miss latencies exceeding 200 cycles (up to 800 cycles), and low prefetch usefulness, meaning that the benchmark is completely memory bottlenecked.</p>
+<p>Below is a table comparing the results from the two workloads:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Perlbench (Compute)</th>
+<th>MCF (Memory-Bound)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Working set</td>
+<td>Small/moderate</td>
+<td>Large, fragmented</td>
+</tr>
+<tr>
+<td>Locality</td>
+<td>Good</td>
+<td>Very poor</td>
+</tr>
+<tr>
+<td>Cache pressure</td>
+<td>Low</td>
+<td>Severe</td>
+</tr>
+<tr>
+<td>DRAM accesses</td>
+<td>Low</td>
+<td>Extremely high</td>
+</tr>
+<tr>
+<td>Sensitivity to latency</td>
+<td>Low</td>
+<td>Very high</td>
+</tr>
+<tr>
+<td>Multicore scaling</td>
+<td>Good</td>
+<td>Poor</td>
+</tr>
+<tr>
+<td>IPC (1-core)</td>
+<td>~1.8</td>
+<td>~0.08</td>
+</tr>
+<tr>
+<td>IPC (4-core)</td>
+<td>~2.1/core</td>
+<td>~0.058/core</td>
+</tr>
+</tbody>
+</table>
+
+</body>
+</html>

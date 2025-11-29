@@ -15,7 +15,7 @@ OUT_CSV="${SCRIPT_DIR}/champsim_results.csv"
 RESULTS_DIR="${SCRIPT_DIR}/results_txt"
 mkdir -p "${RESULTS_DIR}"
 
-# Temporary config file that we will modify for 1-core & 4-core
+# Temporary config file that is modified for 4-core and 1-core builds
 TMP_CONFIG="${CHAMPSIM_ROOT}/champsim_tmp.json"
 
 ###############################################################################
@@ -26,7 +26,7 @@ WARMUP_INS=1000000
 SIM_INS=10000000
 
 # Workloads: (trace_filename, label)
-/bin/true  # just to keep formatting sane
+/bin/true
 WORKLOADS=(
   "600.perlbench_s-210B.champsimtrace.xz,compute"
   "429.mcf-184B.champsimtrace.xz,mem_bound"

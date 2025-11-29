@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 # run_mem_experiments.sh
-# Fully automated Part A measurements
 
 set -euo pipefail
 
@@ -13,12 +12,11 @@ echo "Running cache-sweep experiment (this may take a little while)..."
 ./"${PROG}" cache_sweep > cache_sweep.csv
 
 # Large streaming test: approximate DRAM bandwidth, minimal reuse
-# Adjust 512 if your machine does not have much RAM
-DRAM_MB=512
+DRAM_MB=512 # May need to adjust
 echo "Running streaming DRAM bandwidth experiment (${DRAM_MB} MB, readwrite)..."
 ./"${PROG}" stream "${DRAM_MB}" readwrite > stream_dram_${DRAM_MB}mb.csv
 
-# Smaller streaming test: array likely fits in L2/L3, close to cache bandwidth
+# Smaller streaming test for L2/L3/cache bandwidth
 CACHE_MB=4
 echo "Running streaming cache-sized bandwidth experiment (${CACHE_MB} MB, readwrite)..."
 ./"${PROG}" stream "${CACHE_MB}" readwrite > stream_cache_${CACHE_MB}mb.csv
