@@ -1,0 +1,9 @@
+# name:binary-inside-traces-dir
+
+test-fmath:test-fmath
+test-llong:test-llong
+test-lswlr:test-lswlr
+test-math:test-math
+# test-printf:test-printf
+
+

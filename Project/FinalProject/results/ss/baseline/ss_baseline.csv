@@ -1,0 +1,5 @@
+benchmark,il1_miss_rate,dl1_miss_rate,ul2_miss_rate,sim_num_insn,sim_elapsed_time,sim_CPI
+test-fmath,0.0110,0.0153,1.0000,53949,1,
+test-llong,0.0101,0.0216,1.0000,30132,1,
+test-lswlr,0.0270,0.0470,1.0000,9367,1,
+test-math,0.0042,0.0052,1.0000,214193,1,
