@@ -95,7 +95,7 @@ Outputs:
 - per-benchmark logs
 - `ss_baseline.csv` summarizing miss rates and CPI
 
-#### ChampSim
+### ChampSim
 - `run_champsim.sh` - run a single trace
 - `run_champsim_sweep.sh` - run all configured traces
 
