@@ -1,7 +1,7 @@
 # Project Update - December 5
 *** Josh Green and Akhil Sankar ***
 
-Up to this point, both the SimpleScalar and ChampSim benchmarks have been set up, tested, and benchmarked using some defualt parameters. 
+Up to this point, both the SimpleScalar and ChampSim benchmarks have been set up, tested, and benchmarked using some default parameters. 
 
 In terms of our goals, we have finished up through week 2, with the main milestones being benchmarking and setting up our toolchains.
 
