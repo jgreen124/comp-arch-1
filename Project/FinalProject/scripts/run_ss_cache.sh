@@ -69,16 +69,21 @@ SIM_CPI=$(grep -m1 "sim_CPI" "${OUT_TXT}" 2>/dev/null | awk '{print $2}' || true
 
 VC_LOOKUPS=$(grep -m1 "vc_lookups" "${OUT_TXT}" 2>/dev/null | awk '{print $2}' || true)
 VC_HITS=$(grep -m1 "vc_hits" "${OUT_TXT}" 2>/dev/null | awk '{print $2}' || true)
+UL2_D_ACCESSES=$(grep -m1 "ul2_d_accesses" "${OUT_TXT}" 2>/dev/null | awk '{print $2}' || true)
+UL2_I_ACCESSES=$(grep -m1 "ul2_i_accesses" "${OUT_TXT}" 2>/dev/null | awk '{print $2}' || true)
 
 # One CSV per mode in this RUN_TAG directory
 if [[ ! -f "${OUT_CSV}" ]]; then
-  echo "benchmark,mode,il1_miss_rate,dl1_miss_rate,ul2_miss_rate,sim_num_insn,sim_elapsed_time,sim_CPI,vc_lookups,vc_hits" \
+  echo "benchmark,mode,il1_miss_rate,dl1_miss_rate,ul2_miss_rate,sim_num_insn,sim_elapsed_time,sim_CPI,vc_lookups,vc_hits,ul2_d_accesses,ul2_i_accesses" \
     > "${OUT_CSV}"
 fi
 
 
-echo "${BENCH_NAME},${SS_MODE},${IL1_MISS_RATE},${DL1_MISS_RATE},${UL2_MISS_RATE},${SIM_NUM_INSN},${SIM_ELAPSED_TIME},${SIM_CPI},${VC_LOOKUPS},${VC_HITS}" \
+
+
+echo "${BENCH_NAME},${SS_MODE},${IL1_MISS_RATE},${DL1_MISS_RATE},${UL2_MISS_RATE},${SIM_NUM_INSN},${SIM_ELAPSED_TIME},${SIM_CPI},${VC_LOOKUPS},${VC_HITS},${UL2_D_ACCESSES},${UL2_I_ACCESSES}" \
   >> "${OUT_CSV}"
+
 
 
 echo "Metrics appended to ${OUT_CSV}"
