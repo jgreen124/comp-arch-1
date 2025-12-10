@@ -4,5 +4,8 @@
 /Project/Project2/ChampSim
 /Project/FinalProject/ChampSim
 /Project/FinalProject/simplesim-3.0/*
+# Ignore everything under simplesim-3.0
+/Project/FinalProject/simplesim-3.0/*
+# But track sim-cache.c
 !/Project/FinalProject/simplesim-3.0/sim-cache.c
-/Project/FinalProject/traces
+
