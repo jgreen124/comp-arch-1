@@ -42,6 +42,12 @@ mkdir -p "${SS_RESULTS}" "${CHAMPSIM_RESULTS}"
 export SS_IL1_CONFIG="${SS_IL1_CONFIG:-il1:32768:64:1:l}"
 export SS_DL1_CONFIG="${SS_DL1_CONFIG:-dl1:32768:64:1:l}"
 export SS_UL2_CONFIG="${SS_UL2_CONFIG:-ul2:262144:64:4:l}"
+export SS_MODE="${SS_MODE:-baseline}"
+
+if [[ -f "${CONFIG_DIR}/ss_cache.sh" ]]; then
+    . "${CONFIG_DIR}/ss_cache.sh"
+fi
+
 
 # Optional modes for SimpleSim experiments (baseline, prefetch, etc.)
 export SS_MODE="${SS_MODE:-baseline}"

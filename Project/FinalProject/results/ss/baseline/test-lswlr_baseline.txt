@@ -5,9 +5,9 @@ non-commercial use.  No portion of this work may be used by any commercial
 entity, or for any commercial purpose, without the prior written permission
 of SimpleScalar, LLC (info@simplescalar.com).
 
-sim: command line: /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/simplesim-3.0/sim-cache -redir:sim /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/results/ss/baseline/test-lswlr_baseline.txt -cache:il1 il1:32768:64:1:l -cache:dl1 dl1:32768:64:1:l -cache:il2 ul2:262144:64:4:l -cache:dl2 ul2:262144:64:4:l /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/traces/test-lswlr 
+sim: command line: /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/simplesim-3.0/sim-cache -redir:sim /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/results/ss/baseline/test-lswlr_baseline.txt -cache:il1 il1:32768:64:1:l -cache:dl1 dl1:16:32:1:l -cache:il2 ul2:8192:64:4:l -cache:dl2 ul2:8192:64:4:l -exp:mode baseline -vc:enable 0 -vc:entries 4 -mc:enable 0 -mc:entries 4 -sb:enable 0 -sb:count 1 -sb:depth 4 -sb:degree 1 /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/traces/test-lswlr 
 
-sim: simulation started @ Fri Dec  5 20:53:00 2025, options follow:
+sim: simulation started @ Tue Dec  9 19:24:53 2025, options follow:
 
 sim-cache: This simulator implements a functional cache simulator.  Cache
 statistics are generated for a user-selected cache and TLB configuration,
@@ -28,15 +28,24 @@ information is generated.
 # -redir:prog          <null> # redirect simulated program output to file
 -nice                       0 # simulator scheduling priority
 -max:inst                   0 # maximum number of inst's to execute
--cache:dl1       dl1:32768:64:1:l # l1 data cache config, i.e., {<config>|none}
--cache:dl2       ul2:262144:64:4:l # l2 data cache config, i.e., {<config>|none}
+-cache:dl1       dl1:16:32:1:l # l1 data cache config, i.e., {<config>|none}
+-cache:dl2       ul2:8192:64:4:l # l2 data cache config, i.e., {<config>|none}
 -cache:il1       il1:32768:64:1:l # l1 inst cache config, i.e., {<config>|dl1|dl2|none}
--cache:il2       ul2:262144:64:4:l # l2 instruction cache config, i.e., {<config>|dl2|none}
+-cache:il2       ul2:8192:64:4:l # l2 instruction cache config, i.e., {<config>|dl2|none}
 -tlb:itlb        itlb:16:4096:4:l # instruction TLB config, i.e., {<config>|none}
 -tlb:dtlb        dtlb:32:4096:4:l # data TLB config, i.e., {<config>|none}
 -flush                  false # flush caches on system calls
 -cache:icompress        false # convert 64-bit inst addresses to 32-bit inst equivalents
 # -pcstat              <null> # profile stat(s) against text addr's (mult uses ok)
+-exp:mode            baseline # experiment mode (baseline, victim, miss, stream, stream_multi, victim_stream)
+# -vc:enable                0 # enable victim cache on DL1 (0/1)
+# -vc:entries               4 # number of entries in victim cache
+# -mc:enable                0 # enable miss cache on DL1 (0/1) [stub]
+# -mc:entries               4 # number of entries in miss cache [stub]
+# -sb:enable                0 # enable stream buffers (0/1)
+# -sb:count                 1 # number of independent stream buffers
+# -sb:depth                 4 # depth (lines) per stream buffer
+# -sb:degree                1 # prefetch degree per trigger
 
   The cache config parameter <config> has the following format:
 
@@ -72,6 +81,8 @@ sim_num_insn                   9367 # total number of instructions executed
 sim_num_refs                   4688 # total number of loads and stores executed
 sim_elapsed_time                  1 # total simulation time in seconds
 sim_inst_rate             9367.0000 # simulation speed (in insts/sec)
+vc_lookups                        0 # victim cache lookup count (DL1 read misses)
+vc_hits                           0 # victim cache hit count
 il1.accesses                   9367 # total number of accesses
 il1.hits                       9114 # total number of hits
 il1.misses                      253 # total number of misses
@@ -93,18 +104,18 @@ ul2.repl_rate                0.0000 # replacement rate (i.e., repls/ref)
 ul2.wb_rate                  0.0000 # writeback rate (i.e., wrbks/ref)
 ul2.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
 dl1.accesses                   4785 # total number of accesses
-dl1.hits                       4560 # total number of hits
-dl1.misses                      225 # total number of misses
-dl1.replacements                  0 # total number of replacements
-dl1.writebacks                    0 # total number of writebacks
+dl1.hits                       4248 # total number of hits
+dl1.misses                      537 # total number of misses
+dl1.replacements                521 # total number of replacements
+dl1.writebacks                  466 # total number of writebacks
 dl1.invalidations                 0 # total number of invalidations
-dl1.miss_rate                0.0470 # miss rate (i.e., misses/ref)
-dl1.repl_rate                0.0000 # replacement rate (i.e., repls/ref)
-dl1.wb_rate                  0.0000 # writeback rate (i.e., wrbks/ref)
+dl1.miss_rate                0.1122 # miss rate (i.e., misses/ref)
+dl1.repl_rate                0.1089 # replacement rate (i.e., repls/ref)
+dl1.wb_rate                  0.0974 # writeback rate (i.e., wrbks/ref)
 dl1.inv_rate                 0.0000 # invalidation rate (i.e., invs/ref)
 ul2.accesses                    253 # total number of accesses
-ul2.hits                          0 # total number of hits
-ul2.misses                      225 # total number of misses
+ul2.hits                        777 # total number of hits
+ul2.misses                      226 # total number of misses
 ul2.replacements                  0 # total number of replacements
 ul2.writebacks                    0 # total number of writebacks
 ul2.invalidations                 0 # total number of invalidations
@@ -144,6 +155,6 @@ ld_target_big_endian              0 # target executable endian-ness, non-zero if
 mem.page_count                   27 # total number of pages allocated
 mem.page_mem                   108k # total size of memory pages allocated
 mem.ptab_misses                  27 # total first level page table misses
-mem.ptab_accesses            492864 # total page table accesses
+mem.ptab_accesses            493660 # total page table accesses
 mem.ptab_miss_rate           0.0001 # first level page table miss rate
 
