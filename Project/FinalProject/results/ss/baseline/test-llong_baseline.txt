@@ -7,7 +7,7 @@ of SimpleScalar, LLC (info@simplescalar.com).
 
 sim: command line: /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/simplesim-3.0/sim-cache -redir:sim /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/results/ss/baseline/test-llong_baseline.txt -cache:il1 il1:32768:64:1:l -cache:dl1 dl1:16:32:1:l -cache:il2 ul2:8192:64:4:l -cache:dl2 ul2:8192:64:4:l -exp:mode baseline -vc:enable 0 -vc:entries 4 -mc:enable 0 -mc:entries 4 -sb:enable 0 -sb:count 1 -sb:depth 4 -sb:degree 1 /home/joshg/Documents/Rutgers/classes/comp-arch-1/Project/FinalProject/traces/test-llong 
 
-sim: simulation started @ Tue Dec  9 19:24:53 2025, options follow:
+sim: simulation started @ Tue Dec  9 19:44:25 2025, options follow:
 
 sim-cache: This simulator implements a functional cache simulator.  Cache
 statistics are generated for a user-selected cache and TLB configuration,
@@ -83,6 +83,8 @@ sim_elapsed_time                  1 # total simulation time in seconds
 sim_inst_rate            30132.0000 # simulation speed (in insts/sec)
 vc_lookups                        0 # victim cache lookup count (DL1 read misses)
 vc_hits                           0 # victim cache hit count
+ul2_d_accesses                 1199 # DL2 data-side accesses from DL1 miss handler
+ul2_i_accesses                  305 # IL2 instruction-side accesses from IL1 miss handler
 il1.accesses                  30132 # total number of accesses
 il1.hits                      29827 # total number of hits
 il1.misses                      305 # total number of misses
@@ -155,6 +157,6 @@ ld_target_big_endian              0 # target executable endian-ness, non-zero if
 mem.page_count                   27 # total number of pages allocated
 mem.page_mem                   108k # total size of memory pages allocated
 mem.ptab_misses                  27 # total first level page table misses
-mem.ptab_accesses            589714 # total page table accesses
+mem.ptab_accesses            590118 # total page table accesses
 mem.ptab_miss_rate           0.0000 # first level page table miss rate
 

@@ -1,5 +1,5 @@
-benchmark,mode,il1_miss_rate,dl1_miss_rate,ul2_miss_rate,sim_num_insn,sim_elapsed_time,sim_CPI,vc_lookups,vc_hits
-test-fmath,victim,0.0110,0.1087,1.0000,53949,1,,1815,258
-test-llong,victim,0.0101,0.0629,1.0000,30132,1,,662,35
-test-lswlr,victim,0.0270,0.1122,1.0000,9367,1,,537,29
-test-math,victim,0.0042,0.1340,1.0000,214193,1,,7711,1546
+benchmark,mode,il1_miss_rate,dl1_miss_rate,ul2_miss_rate,sim_num_insn,sim_elapsed_time,sim_CPI,vc_lookups,vc_hits,ul2_d_accesses,ul2_i_accesses
+test-fmath,victim,0.0110,0.1087,1.0000,53949,1,,1815,258,2689,592
+test-llong,victim,0.0101,0.0629,1.0000,30132,1,,662,35,1164,305
+test-lswlr,victim,0.0270,0.1122,1.0000,9367,1,,537,29,974,253
+test-math,victim,0.0042,0.1340,1.0000,214193,1,,7711,1546,10677,907

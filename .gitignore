@@ -2,4 +2,7 @@
 /Project/Project1/simplesim-3.0/
 /Project/Project1/Problem2/.venv
 /Project/Project2/ChampSim
-
+/Project/FinalProject/ChampSim
+/Project/FinalProject/simplesim-3.0/*
+!/Project/FinalProject/simplesim-3.0/sim-cache.c
+/Project/FinalProject/traces
